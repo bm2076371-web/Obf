@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ObfHub - Classificação de Ofuscação</title>
+    <script src="https://tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cloudflare.com">
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans antialiased min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-cyan-500 text-2xl"></i>
+                    <span class="text-xl font-bold tracking-wider bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">OBFHUB</span>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="switchTab('tier-help')" id="btn-tier-help" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium bg-cyan-600 text-white transition">Tier Help</button>
+                    <button onclick="switchTab('obf-global')" id="btn-obf-global" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white transition">Ofuscação Global</button>
+                    <button onclick="switchTab('create-tier')" id="btn-create-tier" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white transition">Create Tier for Obf</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- 1. TIER HELP -->
+        <section id="tab-tier-help" class="tab-content space-y-6">
+            <div class="border-b border-gray-800 pb-4">
+                <h1 class="text-3xl font-extrabold text-white">Guia de Níveis (Tiers) de Ofuscação</h1>
+                <p class="text-gray-400 mt-2">Entenda o nível de complexidade e o quão difícil é fazer a engenharia reversa (deobfuscation) de cada categoria.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="tiers-list-help">
+                <!-- Injetado via JS para não poluir o HTML -->
+            </div>
+        </section>
+
+        <!-- 2. OFUSCAÇÃO GLOBAL -->
+        <section id="tab-obf-global" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-800 pb-4">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-white">Ofuscação Global</h1>
+                    <p class="text-gray-400 mt-1">Veja todos os ofuscadores enviados pela comunidade e homologados por Admin.</p>
+                </div>
+                <!-- Filtros -->
+                <div class="flex gap-2">
+                    <select id="filter-date" onchange="renderGlobalList()" class="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyan-500">
+                        <option value="new">Mais Novos</option>
+                        <option value="old">Mais Antigos</option>
+                    </select>
+                    <select id="filter-tier" onchange="renderGlobalList()" class="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-cyan-500">
+                        <option value="all">Todos os Tiers</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lista Global -->
+            <div class="grid grid-cols-1 gap-4" id="global-obf-list">
+                <!-- Itens dinâmicos aqui -->
+            </div>
+        </section>
+
+        <!-- 3. CREATE TIER FOR OBF -->
+        <section id="tab-create-tier" class="tab-content hidden space-y-6">
+            <div class="border-b border-gray-800 pb-4">
+                <h1 class="text-3xl font-extrabold text-white">Sugerir Ofuscador</h1>
+                <p class="text-gray-400 mt-2">Envie uma ferramenta para análise. Os administradores irão testar e definir o Tier final via API/Painel.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Formulário -->
+                <form id="form-suggest" onsubmit="handleSuggest(event)" class="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Seu Nome / Usuário</label>
+                        <input type="text" required id="suggest-author" class="w-full bg-gray-950 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500" placeholder="Ex: DevGhost">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Nome do Ofuscador</label>
+                        <input type="text" required id="suggest-name" class="w-full bg-gray-950 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500" placeholder="Ex: Luraph, IronBrew, PyArmor...">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Link do Site / Repositório</label>
+                        <input type="url" required id="suggest-link" class="w-full bg-gray-950 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500" placeholder="https://...">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Notas / Descrição (Opcional)</label>
+                        <textarea id="suggest-desc" rows="3" class="w-full bg-gray-950 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-500" placeholder="Explique um pouco sobre como ele funciona..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-medium py-2.5 rounded-lg transition shadow-lg shadow-cyan-950">Enviar para Análise dos Admins</button>
+                </form>
+
+                <!-- Área de Simulação Admin (Para testar a lógica de aprovação/API exigida no escopo) -->
+                <div class="bg-gray-900 border border-amber-900/40 rounded-xl p-6 space-y-4">
+                    <div class="flex items-center gap-2 text-amber-500 font-bold">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>Painel do Admin (Simulação API)</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Como solicitado, apenas Admins/API podem classificar e publicar. Use esta área para simular a aprovação com os 13 Tiers:</p>
+                    
+                    <div id="admin-logs" class="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                        <!-- Logs de envios aguardando aprovação -->
+                        <p class="text-sm text-gray-500 italic text-center py-4">Nenhuma sugestão pendente.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de Informações Avançadas -->
+    <div id="info-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl max-w-lg w-full p-6 space-y-4 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="modal-title" class="text-2xl font-bold text-white"></h3>
+            <div class="flex items-center gap-2">
+                <span id="modal-tier" class="px-2.5 py-1 rounded text-xs font-bold uppercase"></span>
+                <span id="modal-author" class="text-xs text-gray-400"></span>
+            </div>
+            <div class="bg-gray-950 p-4 rounded-lg border border-gray-800 space-y-2">
+                <h4 class="text-sm font-semibold text-amber-500"><i class="fa-solid fa-user-shield mr-1"></i> Recomendação da Administração:</h4>
+                <p id="modal-recommendation" class="text-sm text-gray-300 leading-relaxed"></p>
+            </div>
+            <div class="space-y-1">
+                <span class="text-xs font-medium text-gray-500 block">Links Oficiais:</span>
+                <a id="modal-link" target="_blank" class="text-cyan-400 hover:underline inline-flex items-center gap-1 text-sm">Visitar Site do Ofuscador <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Lógico -->
+    <script>
+        // 13 Classificações Oficiais (Tiers)
+        const TIERS = [
+            { id: 1, name: "Basic", desc: "Fácil de ler. Deobfuscation automática via scripts simples ou ferramentas públicas.", color: "bg-green-950 text-green-400 border-green-800" },
+            { id: 2, name: "Basic Medium", desc: "Contém variáveis renomeadas e leves strings encriptadas.", color: "bg-emerald-950 text-emerald-400 border-emerald-800" },
+            { id: 3, name: "Basic Strong", desc: "Proteções contra formatação (Anti-beautify) e Junk Code inicial.", color: "bg-teal-950 text-teal-400 border-teal-800" },
+            { id: 4, name: "Low Medium", desc: "Adiciona controle de fluxo básico ocultando funções principais.", color: "bg-blue-950 text-blue-400 border-blue-800" },
+            { id: 5, name: "Medium", desc: "Ofuscação padrão de mercado. Exige análise estática e dinâmica para quebrar.", color: "bg-indigo-950 text-indigo-400 border-indigo-800" },
+            { id: 6, name: "High Medium", desc: "Controle de fluxo avançado com achatamento de funções estruturais (Flattening).", color: "bg-violet-950 text-violet-400 border-violet-800" },{ id: 7, name: "Medium Strong", desc: "Injeta múltiplas camadas de proxies em funções nativas do ambiente.", color: "bg-purple-950 text-purple-400 border-purple-800" },{ id: 8, name: "Medium Complexo", desc: "Algoritmos matemáticos complexos aplicados para mascarar operadores.", color: "bg-fuchsia-950 text-fuchsia-400 border-fuchsia-800" },{ id: 9, name: "Low Advanced", desc: "Introdução primária de virtualização de código (Custom VM executando opcodes).", color: "bg-pink-950 text-pink-400 border-pink-800" },{ id: 10, name: "Advanced", desc: "Virtualização complexa. Requer analistas seniores e emulação de ambiente.", color: "bg-orange-950 text-orange-400 border-orange-800" },{ id: 11, name: "Advanced Medium", desc: "Técnicas pesadas de Anti-Tamper, Anti-Debug e VM mutável ativas juntas.", color: "bg-amber-950 text-amber-400 border-amber-800" },{ id: 12, name: "Advanced Strong", desc: "Altamente destrutivo para engenharia reversa. Customizações agressivas no compilador.", color: "bg-red-950 text-red-400 border-red-800" },{ id: 13, name: "Advanced muti-complexo", desc: "Múltiplas arquiteturas de VMs customizadas rodando em paralelo. Extremamente difícil de quebrar.", color: "bg-rose-950 text-rose-400 border-rose-800" }];// Banco de Dados Simulado em memórialet globalObfuscators = [{id: 1,name: "Luraph",tierId: 13, // Advanced muti-complexoauthor: "AdminSystem",link: "https://luraph.com",desc: "Ofuscador focado em Lua de altíssimo nível.",recommendation: "Fortemente recomendado para scripts comerciais. A desofuscação manual leva dias ou semanas mesmo para especialistas.",date: new Date(2026, 1, 10).getTime()},{id: 2,name: "JS-Obfuscator Base",tierId: 5, // Mediumauthor: "ComunidadeDev",link: "https://obfuscator.io",desc: "Ofuscador open source popular para Javascript.",recommendation: "Recomendado para proteger códigos básicos contra leigos, mas ferramentas prontas conseguem reverter partes dele.",date: new Date(2026, 1, 1).getTime()}];let pendingSuggestions = [];// Inicialização do Appwindow.onload = function() {renderTierHelp();populateSelectFilters();renderGlobalList();renderAdminPanel();};// Troca de Abas (Tabs)function switchTab(tabId) {document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));document.getElementById(tab-${tabId}).classList.remove('hidden');document.querySelectorAll('.tab-btn').forEach(btn => {btn.classList.remove('bg-cyan-600', 'text-white');btn.classList.add('text-gray-400', 'hover:text-white');});const activeBtn = document.getElementById(btn-${tabId});activeBtn.classList.remove('text-gray-400', 'hover:text-white');activeBtn.classList.add('bg-cyan-600', 'text-white');}// Renderiza Guia de Tiersfunction renderTierHelp() {const container = document.getElementById('tiers-list-help');container.innerHTML = TIERS.map(tier => <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-cyan-500/50 transition"> <div class="flex items-center justify-between mb-3"> <span class="text-xs font-semibold text-gray-500">Nível ${tier.id}</span> <span class="px-2.5 py-0.5 rounded text-xs font-bold tracking-wide uppercase border ${tier.color}">${tier.name}</span> </div> <p class="text-sm text-gray-400 leading-relaxed">${tier.desc}</p> </div>).join('');}// Popula selects de Tiersfunction populateSelectFilters() {const filterTier = document.getElementById('filter-tier');TIERS.forEach(tier => {let opt = document.createElement('option');opt.value = tier.id;opt.textContent = tier.name;filterTier.appendChild(opt);});}// Renderiza lista Global filtradafunction renderGlobalList() {const dateFilter = document.getElementById('filter-date').value;const tierFilter = document.getElementById('filter-tier').value;const container = document.getElementById('global-obf-list');let filtered = [...globalObfuscators];if (tierFilter !== 'all') {filtered = filtered.filter(item => item.tierId == tierFilter);}if (dateFilter === 'new') {filtered.sort((a, b) => b.date - a.date);} else {filtered.sort((a, b) => a.date - b.date);}if(filtered.length === 0) {container.innerHTML = <p class="text-gray-500 italic text-center py-8">Nenhum ofuscador encontrado com esses filtros.</p>;return;}container.innerHTML = filtered.map((item, index) => {const tierInfo = TIERS.find(t => t.id === item.tierId);return <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-900/80"> <div class="space-y-1"> <div class="flex items-center gap-3 flex-wrap"> <h3 class="text-lg font-bold text-white">${index + 1}. ${item.name}</h3> <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${tierInfo.color}">${tierInfo.name}</span> </div> <p class="text-xs text-gray-400">Publicado por: <span class="text-cyan-400">@${item.author}</span></p> </div> <button onclick="openModal(${item.id})" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-sm font-medium px-4 py-2 rounded-lg transition border border-gray-700">Ver Informações</button> </div>;}).join('');}// Envio de formulário de sugestãofunction handleSuggest(e) {e.preventDefault();const author = document.getElementById('suggest-author').value;const name = document.getElementById('suggest-name').value;const link = document.getElementById('suggest-link').value;const desc = document.getElementById('suggest-desc').value;const newSuggestion = { id: Date.now(), author, name, link, desc };pendingSuggestions.push(newSuggestion);document.getElementById('form-suggest').reset();alert("Enviado com sucesso! Sua sugestão está no Log de aprovação dos Administredores.");renderAdminPanel();}// Renderiza o Painel Restrito de Admin (onde a API atuaria para injetar as tags)function renderAdminPanel() {const container = document.getElementById('admin-logs');if (pendingSuggestions.length === 0) {container.innerHTML = <p class="text-sm text-gray-500 italic text-center py-4">Nenhuma sugestão pendente.</p>;return;}container.innerHTML = pendingSuggestions.map(s => `Ofuscador: ${s.name} (@${s.author})Definir Nível (Apenas ADMIN via API):${TIERS.map(t => <option value="${t.id}">${t.name}</option>).join('')}Aprovar e Classificar`).join('');}// Ação do Administrador classificando o item (Simulando Endpoint de API Protegida)function approveByAdmin(id) {const suggestion = pendingSuggestions.find(s => s.id === id);const selectTier = document.getElementById(admin-select-tier-${id}).value;const recPrompt = prompt("Escreva uma recomendação técnica para este Ofuscador (Mensagem do Admin):", "Recomendado pelos administradores para uso geral.");// Injeta no banco global estruturado com o tier correto selecionado pelo adminglobalObfuscators.push({id: globalObfuscators.length + 1,name: suggestion.name,tierId: parseInt(selectTier),author: suggestion.author,link: suggestion.link,desc: suggestion.desc,recommendation: recPrompt || "Nenhuma nota técnica deixada pela administração.",date: Date.now()});// Remove das pendênciaspendingSuggestions = pendingSuggestions.filter(s => s.id !== id);renderAdminPanel();renderGlobalList();}// Modal de Informações Avançadasfunction openModal(id) {const item = globalObfuscators.find(o => o.id === id);const tierInfo = TIERS.find(t => t.id === item.tierId);document.getElementById('modal-title').textContent = item.name;document.getElementById('modal-tier').textContent = tierInfo.name;document.getElementById('modal-tier').className = px-2.5 py-1 rounded text-xs font-bold uppercase border ${tierInfo.color};document.getElementById('modal-author').textContent = Enviado por: @${item.author};document.getElementById('modal-recommendation').textContent = item.recommendation;document.getElementById('modal-link').href = item.link;document.getElementById('info-modal').classList.remove('hidden');document.getElementById('info-modal').classList.add('flex');}function closeModal() {document.getElementById('info-modal').classList.add('hidden');document.getElementById('info-modal').classList.remove('flex');}
